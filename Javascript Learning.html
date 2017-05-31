@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+</head>
+<body>
+<input type="text" id="fN"
+  onkeyup="validateRequiredField('fN')"
+  onblur="validateRequiredField('fN')"/>
+<input type="text" id="lN"
+       onkeyup="validateRequiredField('lN')"
+       onblur="validateRequiredField('lN')"/>
+
+<!--
+onmouseover="this.style.background='red'; this.style.color='yellow'"
+onmouseout="this.style.background='black'; this.style.color='white'"-->
+
+<script type="text/javascript">
+// document.getElementById("btn").onmouseover=validateRequiredField()
+/*
+
+*/
+
+    fN.addEventListener("mouseover", changeOnMouseOver);
+    lN.addEventListener("mouseover", changeOnMouseOver);
+    lN.addEventListener("mouseout", changeOnMouseOut);
+    fN.addEventListener("mouseout", changeOnMouseOut);
+
+    function validateRequiredField(controlId) {
+
+        var control = document.getElementById(controlId)
+        control.style.color = "white";
+        if (control.value == "") {
+            control.style.background = "red";
+        } else {
+            control.style.background = "green";
+        }
+    }
+
+    function changeOnMouseOver() {
+        this.style.background="red"
+    }
+    function changeOnMouseOut() {
+        this.style.background="green"
+    }
+
+
+</script>
+</body>
+</html>

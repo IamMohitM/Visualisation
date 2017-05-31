@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <autosync enabled="false"/>
+    <link href="BinStyleSheet.css" type="text/css" rel="stylesheet" />
+    <title></title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <div class="dropdown" style="float:right; margin-right:5px">
+        <button id="ButtonMonth" onclick="myFunction()" class="dropbtn">Month</button>
+        <div id="Month" class="dropdown-content">
+            <a onclick=selectMonth(0)>January</a>
+            <a onclick=selectMonth(1)>February</a>
+            <a onclick=selectMonth(2)>March</a>
+            <a onclick=selectMonth(3)>April</a>
+            <a onclick=selectMonth(4)>May</a>
+            <a onclick=selectMonth(5)>June</a>
+            <a onclick=selectMonth(6)>July</a>
+            <a onclick=selectMonth(7)>August</a>
+            <a onclick=selectMonth(8)>September</a>
+            <a onclick=selectMonth(9)>October</a>
+            <a onclick=selectMonth(10)>November</a>
+            <a onclick=selectMonth(11)>December</a>
+        </div>
+    </div>
+    
+    <div class="dropdown" style="float:right; margin-right:5px">
+        <button id="ButtonYear" onclick="myFunctionYear()" class="dropbtn">Year</button>
+        <div id="Year" class="dropdown-content">
+            <a onclick=selectYear(0) value="2016">2016</a>
+            <a onclick=selectYear(1) value="2017">2017</a>
+        </div>
+    </div>
+    <script src="d3.v4.min.js"></script>
+    <script src="moment.js"></script>
+    <script src="nv.d3.min.js"></script>
+    <script src="dimple.v2.3.0.min.js"></script>
+    <script type="text/javascript">
+
+        function collect(data) {
+            var margin = { top: 30, right: 30, bottom: 60, left: 70 },   //{ left: 60, right: 30, top: 20, bottom: 30 }
+              width = 1020 - margin.left - margin.right,
+              height = 520 - margin.top - margin.bottom;    //width = 960 - margin.left - margin.right, height = 600 - margin.top;
+
+            d3.select("body").selectAll("svg").remove();
+
+            var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+            var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width + margin.right + margin.left)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+            svg.select("body").append("H2").text("Report of August, 2016");
+
+            p = d3.timeFormat("%I:%M:%S %p");
+            parse = d3.timeFormat("%a %d-%m-%Y")
+
+            data.forEach(
+                function (d) {
+                    d["time"] = moment(d["time"], "HH:mm:ss") //p(d["time"])
+                    d["date"] = moment(d["date"], "DD-MM-YYYY")//parse([d["date"]]);
+                    return d;
+                });
+            //x_scale = d3.scaleTime().domain(extent).range([0, width]);
+
+            var total = [];
+            var index = 0;
+            for (var i = 0; i < data.length;) {
+                var count = 0;
+                var c = true;
+                var k = i;
+                while(c&&i<data.length)
+                {
+                    if(data[i].bin_height>2.8)
+                    {
+                        count++;
+                        i++;
+                    }
+                    else
+                    {
+                        if (count > 2)
+                        {
+                            total[index++] = {
+                                'key': moment(data[k].date._i, "DD-MM-YYYY")._d,
+                                'value': moment(data[k].time._i, "HH:mm:SS"),
+                                'count': count
+                            };
+                        }
+                        c = false;
+                        i++;
+                    }
+                }
+            }
+
+            color = d3.scaleLinear()
+                .domain([0, d3.max(total, function (d)
+                {
+                    return d.count;
+                })])
+                .range(["#51b6c3", "#253494"])//"#fc8d59","#b30000"
+
+            band_scale = d3.scaleBand().domain(d3.extent(total, function (d) { return d.key; })).rangeRound([0, width]).padding(0.9);
+
+            y_scale = d3.scaleLinear().domain([0,15]).range([height, 0]);
+
+            x_date_scale = d3.scaleTime().domain(d3.extent(total, function (d) { return d.key; })).rangeRound([0, width])
+
+            xAxis = d3.axisBottom(x_date_scale).tickFormat(d3.timeFormat("%d"));
+            
+            yAxis = d3.axisLeft(y_scale).ticks(10)
+
+            
+            var line = d3.line().x(function (d) {
+                return x_date_scale(d.key);
+            }).y( function (d) { return y_scale(d.count); })
+
+            svg.append("g").append("text").attr("text-anchor", "middle")
+            .attr("transform", "translate(" + width/2 + "," + 465 + ")").text("Dates")
+
+            svg.append("g")
+            .attr("class", "x-axis")
+                .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+
+            svg.append("g")
+            .attr("class", "y-axis")
+            .call(yAxis);
+            svg.append("g")
+            .append("text")
+                .attr("transform", "translate(0,0)")
+                .attr("transform", "rotate(-90)")
+            .attr("y", -35)
+
+                .attr("x",-200)
+            .style("text-anchor", "middle")
+                .style("font-size", 14)
+                .style("stroke-width",0.9)
+            .text("Hours");
+
+            bar = svg.selectAll("rect")
+            .data(total.sort(function (a, b) { return b.count - a.count; }))
+            .enter()
+            .append("rect")
+              .attr("class", "bar")
+
+            bar.transition().duration(1000).attr("x", function (d) { return x_date_scale(d.key); })
+              .attr("y", function (d) { return y_scale(d.count); })
+              .attr("width", function (d) { return band_scale.bandwidth() -20; })
+              .attr("height", function (d) { return height - y_scale(d.count); })
+                    .attr("fill","#b30000") //function (d) {
+
+                    //    return color(d.count);
+                    //});
+            
+            bar.on("mouseover", function (d) {
+                div.transition()
+                  .duration(200)
+                  .style("opacity", .9);
+                div.html(parse(d.key)+ "<br/>" + d.count + " hours<br/>" + p(d.value))
+                  .style("left", (d3.event.pageX) + "px")
+                  .style("top", (d3.event.pageY - 28) + "px");
+            })
+     .on("mouseout", function (d) {
+         div.style("opacity", 0);
+     });
+
+            
+     //       svg.append("path").attr("class","line").attr("d", line(total));
+        }
+
+        /* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+        function myFunction() {
+
+            document.getElementById("Year").classList.toggle("hide");
+            document.getElementById("Month").classList.toggle("show");
+        }
+        function myFunctionYear() {
+            document.getElementById("Month").classList.toggle("hide");
+            document.getElementById("Year").classList.toggle("show");
+        }
+
+        function selectMonth(index) {
+            month = document.getElementById("Month").children;
+            document.getElementById("ButtonMonth").innerHTML = month[index].text;
+            display();
+        }
+
+        function selectYear(index) {
+            year = document.getElementById("Year").children;
+            document.getElementById("ButtonYear").innerHTML = year[index].text;
+            display();
+        }
+        // Close the dropdown menu if the user clicks outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        function display() {
+            d3.json("BinData.json", DataFormat);
+        }
+
+        function DataFormat(data) {
+
+            month = document.getElementById("ButtonMonth").innerHTML;
+            year = document.getElementById("ButtonYear").innerHTML;
+            if (year == "Year") {
+                year = "2016";
+                document.getElementById("ButtonYear").innerHTML = year;
+            }
+            if (month == "Month") {
+                month = "August";
+                document.getElementById("ButtonMonth").innerHTML = year;
+            }
+
+            data.forEach(
+                function (d) {
+                    d["time"] = moment(d["time"], "HH:mm:ss") //p(d["time"])
+                    d["date"] = moment(d["date"], "DD-MM-YYYY")//parse([d["date"]]);
+                    return d;
+                });
+
+            data = data.filter(function (d) {
+                return month == d["date"].format("MMMM") && year == d["date"].format("YYYY")
+            });
+            collect(data);
+           
+
+        }
+
+    </script>
+
+    <!--<script type="text/javascript">
+        d3.json("BinData.json", collect);
+    </script>-->
+</body>
+</html>

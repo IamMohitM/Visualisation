@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dimple</title>
+    <script src="d3.v4.min.js"></script>
+    <script src="dimple.v2.3.0.min.js"></script>
+</head>
+<body>
+<div id="chartContainer">
+<script type="text/javascript">
+    function visualize(data) {
+        /*var margin = 75,
+            width = 1400 - margin,
+            height = 600 - margin;*/
+       /* var svg = d3.select("body").append("svg")
+            .attr("height", height + margin)
+            .attr("width", width + margin)*/
+        var svg = dimple.newSvg("#chartContainer", 600, 400);
+
+       /* g = svg.append("g")
+            .attr("class", "chart");*/
+        var myChart = new dimple.chart(svg, data);
+
+        var x = myChart.addCategoryAxis("x", "FTAG");
+        var y = myChart.addMeasureAxis("y", "AF");
+
+        myChart.addSeries(null, dimple.plot.scatter);
+        myChart.draw();
+    }
+
+    d3.tsv("foulsandgoals.tsv.txt", visualize);
+</script>
+</div>
+</body>
+</html>

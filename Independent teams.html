@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="d3.v3.min.js"></script>
+    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+    <script src="moment.js"></script>
+    <style>
+        h2 {
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript">
+        function draw(data)
+        {
+            console.log(data);
+            "use strict"
+            var margin = 75,
+                width = 900 - margin,
+                height = 500 - margin;
+
+            //d3.select("body").append("h2").text("Baseball");
+            var svg = d3.select("body").append("svg")
+                .attr("height", height + margin)
+                .attr("width", width + margin)
+                .append("g")
+                .attr("class", "chart");
+
+            data.forEach(function (d) {
+                d["Date"] = moment(d["Date"], "DD-MM-YYYY");
+                return d;
+            })
+
+            var myChart = new dimple.chart(svg, data);
+            var y = myChart.addMeasureAxis("y", "FTHG");
+            var x = myChart.addTimeAxis("x", "Date");
+            x.tickFormat = "%b-%Y";
+            y.title="Goals Scored"
+            x.ticks = 10;
+            var s = myChart.addSeries("HomeTeam", dimple.plot.line);
+            // s.interpolation = "cardinal";
+            myChart.addLegend(400, 10, 360, 20, "right");
+            myChart.draw();
+        }
+    </script>
+</head>
+<body>
+<script type="text/javascript">
+    d3.tsv("foulsandgoals.tsv.txt", function (d) {
+        if (d["HomeTeam"] == "Juventus" || d["HomeTeam"] == "Bologna")
+            return d;
+    }, draw);
+
+</script>
+</body>
+</html>

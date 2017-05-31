@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{22F3852A-DFB6-4D79-8F2B-9454246C059E}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Visualisation</RootNamespace>
+    <AssemblyName>Visualisation</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="AgePopPie.html" />
+    <Content Include="BinData.json" />
+    <Content Include="BinReport.html" />
+    <Content Include="BinReport3.html" />
+    <Content Include="BinStyleSheet.css" />
+    <Content Include="bootstrap.css" />
+    <Content Include="bootstrap.min.css" />
+    <Content Include="bootstrap.min.js" />
+    <Content Include="Choropleth.html" />
+    <Content Include="d3.v3.min.js" />
+    <Content Include="d3.v4.min.js" />
+    <Content Include="d3ia.css" />
+    <Content Include="data.csv.txt" />
+    <Content Include="dimple.v2.3.0.min.js" />
+    <Content Include="EventBubbling.html" />
+    <Content Include="FinalReport.html" />
+    <Content Include="flare.csv.txt" />
+    <Content Include="FoulsAndGoals.html" />
+    <Content Include="foulsandgoals.tsv.txt" />
+    <Content Include="FoulsandGoals_Dimple.html" />
+    <Content Include="function-plot@1.17.3.js" />
+    <Content Include="Globe.html" />
+    <Content Include="GoalComposition.html" />
+    <Content Include="Independent teams.html" />
+    <Content Include="Javascript Learning.html" />
+    <Content Include="Juventus And Others.html" />
+    <Content Include="Line Graph.html" />
+    <Content Include="moment-with-locales.js" />
+    <Content Include="moment.js" />
+    <Content Include="nv.d3.min.js" />
+    <Content Include="PackLayout.html" />
+    <Content Include="pieData.csv.txt" />
+    <Content Include="popu.csv" />
+    <Content Include="population.csv.txt" />
+    <Content Include="Population.html" />
+    <Content Include="Shots and Goals.html" />
+    <Content Include="soccerviz.js" />
+    <Content Include="unemployment.tsv" />
+    <Content Include="USD Exchange Rate.html" />
+    <Content Include="usd_euro.csv.txt" />
+    <Content Include="V3Report.html" />
+    <Content Include="World cup 2010.html" />
+    <Content Include="worldcup.csv.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
