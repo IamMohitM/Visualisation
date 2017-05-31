@@ -119,6 +119,9 @@
        
         month = document.getElementById("ButtonMonth").innerHTML;
         year = document.getElementById("ButtonYear").innerHTML;
+        //This function is called everytime the month or year is selected
+        //When the month or year is selected the first time, the other is still not selected
+        //Hence the next if conditions sets a default value
         if (year == "Year") {
             year = "2016";
             //If 
@@ -132,6 +135,7 @@
         /*if (dataset.length == 0) {*/
         //d3.json("BinData.json", getData);
 
+        //Makes an ajax call to get the data from the cloud
         if (dataset == 0) {
             $.ajax({
                 url:
@@ -148,7 +152,7 @@
                 }
 
             });
-        }else
+        }else//if the dataset has already been called not required to call again
             getData(dataset)
 
         /* function(data) {
@@ -181,12 +185,14 @@
         //data.reverse();
         var green = [], red = [];
 
+        //Changes format of time and date
         data.forEach(function (d) {
             d["time"] = moment(d["time"], "hh:mm:ss");
             d["date"] = moment(d["date"], "DD-MM-YYYY");
             return d;
         });
 
+        //Return an array with only data of month year seleted
         data = data.filter(function (d) {
             return month == d["date"].format("MMMM") && year == d["date"].format("YYYY")
         });
@@ -200,12 +206,10 @@
             var time=data[i].time.format("HH")
             var count = 0;
             from = moment(data[k].time._i, "HH:mm:SS");
-            if (data[i].bin_height <= warning_height) {
+            if (data[i].bin_height <= warning_height) {//creates an array with the data where the bin could be filled or was not full. Enters in green array
+               //<92%
                 while (i < data.length && data[i].bin_height <= warning_height && date==data[i].date.format("DD-MM-YYYY") && time==data[i].time.format("HH")) {
                     count++;
-                   /* if (from.isAfter(moment(data[i].time._i, "HH:mm:SS"))) {
-                        from = moment(data[i].time._i, "HH:mm:SS");
-                    }*/
                     i++;
 
                 }
@@ -217,7 +221,7 @@
                 });
             }
 
-            else {
+            else {//creates an array with the data where the bin was overfilled or was full >92%
                 while (i < data.length && data[i].bin_height > warning_height && date==data[i].date.format("DD-MM-YYYY")&& time==data[i].time.format("HH")) {
                     count++;
                     /*if (from.isAfter(moment(data[i].time._i, "HH:mm:SS"))) {
@@ -237,26 +241,30 @@
     }
 
     function visualize(green, red) {
+        //This function creates the chart elements
         var div = d3.select("body").append("div")
             .attr("class", "tooltip").attr("id", "tip")
             .style("opacity", 0);
 
-        p = d3.timeFormat("%I:%M:%S %p");
-        parse = d3.timeFormat("%a %d-%m-%Y")
+        p = d3.timeFormat("%I:%M:%S %p");//Formatting the time
+        parse = d3.timeFormat("%a %d-%m-%Y")//to Format the Day
 
-        d3.select("body").selectAll("svg").remove();
+        d3.select("body").selectAll("svg").remove();// Removes the svg so that the new visualization is not overlapped.
+        //This function is called every time the month and year is changed/selected, hence the svg should be cleared.
 
-        d3.select(".legend").remove();
+        d3.select(".legend").remove();//Removed the legend too
 
         divSVG = d3.select("body").select("#tenColumn").append("div").attr("class", "row")
 
         wellRow = d3.select("body").select("#wellrow").select(".well").append("div").attr("class", "row")
 
+        //Setting and creating the width and height of svg.
         svg = divSVG
             .append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom);
 
+        //Calculates the total hours the bin was full. Red only has the objects when the bi =n was full
         total = d3.sum(red,
             function(d) {
                 return d.count;
@@ -272,26 +280,33 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         g.append("text").attr("transform", "translate(" + width / 2 + "," + 400 + ")").text("Dates");
+        //xAxis Label
 
         x_scale = d3.scaleTime().domain(d3.extent(green, function(d) { return d.date; })).rangeRound([0, width]);
+        //Creates the xAxis scale
 
         y_scale = d3.scaleTime().domain([moment("00:00:00", "HH:mm:SS")._d, moment("23:59:59", "HH:mm:SS")._d])
             .range([height, 0]);
-
+//Creates the xAxis scale
+        
         xAxis = d3.axisBottom(x_scale).tickFormat(d3.timeFormat("%d %b"))
+        //creating the xAxis
 
         hour_scale = d3.scaleLinear().domain([0, 24]).range([height, 0]);
+        
 
         band_scale = d3.scaleBand().domain(d3.extent(green, function(d) { return d.date; })).rangeRound([0, width])
             .padding(0.9);
+        //To set the width of each bar
 
         yAxis = d3.axisLeft(y_scale).tickArguments(d3.timeFormat("%h:%M %p")).ticks(12);
-
+        //creating the yAxis
         g.append("g")
             .attr("class", "x-axis")
             .attr("transform", "translate(0," + height + ")").call(xAxis);
 
         g.append("g").append("text").attr("transform", "rotate(-90)").attr("y", -50).attr("x", -200).text("Time");
+        //y Axis Label
 
         g.append("g")
             .attr("class", "y-axis")
@@ -301,8 +316,8 @@
             .data(red.sort(function(a, b) { return b.count - a.count; }))
             .enter().append("g")
             .append("rect")
-            .attr("class", "bar")
-
+            .attr("class", "bar");
+        //creating redBar i.e rectangles
         redBar.transition().duration(50).attr("x", function(d) { return x_scale(d.date); })
             .attr("y",
                 function(d) {
@@ -312,7 +327,9 @@
             .attr("width", function(d) { return band_scale.bandwidth() - 15; }).transition().duration(2500)
             .attr("height", function(d) { return height - hour_scale(d.count); })
             .attr("fill", "red")
-
+         //filling red bar with red and setting attributes
+        
+        //Javascript functions for the tooltips
         redBar.on("mouseover",
                 function(d) {
                     div.transition()
@@ -329,6 +346,7 @@
                     div.style("opacity", 0);
                 });
 
+        //Similar to greenBar
         greenBar = g.selectAll("circle")
             .data(green.sort(function(a, b) { return b.count - a.count; }))
             .enter().append("g")
